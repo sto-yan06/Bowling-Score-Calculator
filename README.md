@@ -1,7 +1,7 @@
 This is a Bowling Score Calculator
 
 
-1. The Input should be a number between 1 and 10 to represent the number of knocked bowling pins.
+1. The Input must be a number between 1 and 10 to represent the number of knocked bowling pins.
 2. There are 2 inputs for each frame which together must be equal to 10.
 3. After each frame you will be given the total score untill then.
 4. In case of a Strike, the input is the number of pins knocked in the next round;
