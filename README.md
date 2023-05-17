@@ -8,3 +8,6 @@ This is a Bowling Score Calculator
 	In case of hitting another strike the next round there is only one input to give, else it will ask for 2 inputs.
 5. In case of a Spare, the input is the number of pins knocked in the next round, only for one "roll"(1 input).
 6. After all the 10 Frames, it will show you the total score as an output.
+
+Test Update:
+![image](https://github.com/sto-yan06/BowlingScore_Calculator/assets/116439554/0160d9c4-526e-4b38-950a-36fbed998ee1)
