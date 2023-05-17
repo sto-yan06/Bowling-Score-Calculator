@@ -10,4 +10,7 @@ This is a Bowling Score Calculator
 6. After all the 10 Frames, it will show you the total score as an output.
 
 Test Update:
+
+
+
 ![image](https://github.com/sto-yan06/BowlingScore_Calculator/assets/116439554/0160d9c4-526e-4b38-950a-36fbed998ee1)
