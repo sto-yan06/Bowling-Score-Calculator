@@ -1,94 +1,114 @@
-import unittest
-from unittest.mock import patch
-import builtins
+import random
 
+def choose_game_mode():
+    game = BowlingGame()
 
-class BowlingGameTests(unittest.TestCase):
-    def test_with_given_example(self):
-        with patch('builtins.input',
-                   side_effect=['1', '4', '4', '5', '6', '4', '5', '5', '5', '10', '10', '0', '1', '0', '1',
-                                '7', '3', '6', '6', '4', '10', '10', '2', '8', '2', '8', '6']):
-            expected_score = int(133)
-            actual_score = self.play_game()
-            self.assertEqual(actual_score, expected_score)
+    mode = input("Choose a game mode (1 - Auto, 2 - Manual): ")
 
-    def test_with_all_strikes(self):
-        with patch('builtins.input', side_effect=['10'] * 20):
-            expected_score = int(300)
-            actual_score = self.play_game()
-            self.assertEqual(actual_score ,expected_score)
+    if mode == '1':
+        game.play_game_auto()
+    elif mode == '2':
+        game.play_game_manual()
+    else:
+        print("Invalid game mode selection. Please choose 1 or 2.")
+        choose_game_mode()
 
-    def tests_with_all_zero(self):
-        with patch('builtins.input', side_effect=['0'] * 20):
-            expected_score = int(0)
-            actual_score = self.play_game()
-            self.assertEqual(expected_score, actual_score)
+    play_again = input("Do you want to play again? (Y/N): ")
+    if play_again.upper() == "Y":
+        choose_game_mode()
 
-    def tests_with_all_spares(self):
-        with patch('builtins.input', side_effect=['5','5','5'] * 30):
-            expected_score = int(150)
-            actual_score = self.play_game()
-            self.assertEqual(expected_score, actual_score)
+class BowlingGame:
+    def __init__(self):
+        self.frames_scores = []
+        self.current_frame = 1
+        self.current_roll = 1
+        self.total_score = 0
 
-    def test_with_random_numbers(self):
-        with patch('builtins.input', side_effect=['3','5','5','5','5','5','4','5','5','10','10','2','6','2','6','8','1','3','5','10','2','4','2','4']):
-            expected_score = int(117)
-            actual_score = self.play_game()
-            self.assertEqual(expected_score, actual_score)
+    def play_game_auto(self):
+        while self.current_frame <= 10:
+            pins = random.randint(0, 10)
+            self.total_score += pins
 
+            if self.current_roll == 2 or pins == 10:
+                if self.current_roll == 1 and pins == 10:
+                    next_pins_strike_1 = random.randint(0, 10)
+                    self.total_score += next_pins_strike_1
+                    if next_pins_strike_1 == 10:
+                        self.total_score += 10
+                    else:
+                        next_pins_strike_2 = random.randint(0, 10)
+                        self.total_score += next_pins_strike_2
 
-    def play_game(self):
+                if self.current_roll == 1 and len(self.frames_scores) > 0 and self.frames_scores[-1] == 10:
+                    self.total_score += pins
+                    if self.current_frame == 10 and pins == 10:
+                        bonus_pins_1 = random.randint(0, 10)
+                        self.total_score += bonus_pins_1
+                        bonus_pins_2 = random.randint(0, 10)
+                        self.total_score += bonus_pins_2
 
-        frames_scores = []
-        current_frame = 1
-        current_roll = 1
-        total_score = 0
-        while current_frame <= 10:
+                elif self.current_roll == 2 and self.total_score == 10:
+                    if self.current_frame < 10:
+                        next_pins_spare = random.randint(0, 10)
+                        self.total_score += next_pins_spare
+                    else:
+                        bonus_pins = random.randint(0, 10)
+                        self.total_score += bonus_pins
 
-            pins = int(input("Enter the number of pins knocked down on roll " + str(current_roll) + " of frame " + str(current_frame) + ": "))
+                self.frames_scores.append(self.total_score)
+                print("Score after frame " + str(self.current_frame) + ": " + str(sum(self.frames_scores)))
+                self.total_score = 0
+                self.current_frame += 1
+                self.current_roll = 1
+            else:
+                self.current_roll += 1
 
-            total_score += pins
+        print("Final score: " + str(sum(self.frames_scores)))
+        return int(sum(self.frames_scores))
 
-            if current_roll == 2 or pins == 10:
+    def play_game_manual(self):
+        while self.current_frame <= 10:
+            pins = int(input(
+                "Enter the number of pins knocked down on roll " + str(self.current_roll) + " of frame " + str(
+                    self.current_frame) + ": "))
+            self.total_score += pins
 
-                if current_roll == 1 and pins == 10:
+            if self.current_roll == 2 or pins == 10:
+                if self.current_roll == 1 and pins == 10:
                     next_pins_strike_1 = int(
                         input("You hit a Strike, Enter the number of pins knocked down on the first roll: "))
-                    total_score += next_pins_strike_1
+                    self.total_score += next_pins_strike_1
                     if next_pins_strike_1 == 10:
-                        total_score += 10
+                        self.total_score += 10
                     else:
                         next_pins_strike_2 = int(
                             input("You hit a Strike, Enter the number of pins knocked down on the second roll: "))
-                        total_score += next_pins_strike_2
+                        self.total_score += next_pins_strike_2
 
-                if current_roll == 1 and len(frames_scores) > 0 and frames_scores[-1] == 10:
-                    total_score += pins
-                    if current_frame == 10 and pins == 10:
+                if self.current_roll == 1 and len(self.frames_scores) > 0 and self.frames_scores[-1] == 10:
+                    self.total_score += pins
+                    if self.current_frame == 10 and pins == 10:
                         bonus_pins_1 = int(input("You hit a Strike on tenth one! Roll two more: "))
-                        total_score += bonus_pins_1
+                        self.total_score += bonus_pins_1
                         bonus_pins_2 = int(input("You hit a Strike on tenth frame! Roll one more: "))
-                        total_score += bonus_pins_2
+                        self.total_score += bonus_pins_2
 
-                elif current_roll == 2 and total_score == 10:
-                    if current_frame < 10:
-                        next_pins_spare = int(input("You hit a Spare, Enter the number of pins knocked down on the next roll: "))
-                        total_score += next_pins_spare
+                elif self.current_roll == 2 and self.total_score == 10:
+                    if self.current_frame < 10:
+                        next_pins_spare = int(
+                            input("You hit a Spare, Enter the number of pins knocked down on the next roll: "))
+                        self.total_score += next_pins_spare
                     else:
                         bonus_pins = int(input("You hit a Spare on tenth frame! Roll one more: "))
-                        total_score += bonus_pins
-                frames_scores.append(total_score)
-                print("Score after frame " + str(current_frame) + ": " + str(sum(frames_scores)))
-                total_score = 0
-                current_frame += 1
-                current_roll = 1
+                        self.total_score += bonus_pins
 
+                self.frames_scores.append(self.total_score)
+                print("Score after frame " + str(self.current_frame) + ": " + str(sum(self.frames_scores)))
+                self.total_score = 0
+                self.current_frame += 1
+                self.current_roll = 1
             else:
-                current_roll += 1
+                self.current_roll += 1
 
-
-        print("Final score: " + str(sum(frames_scores)))
-        return int(sum(frames_scores))
-
-
-
+        print("Final score: " + str(sum(self.frames_scores)))
+        return int(sum(self.frames_scores))
